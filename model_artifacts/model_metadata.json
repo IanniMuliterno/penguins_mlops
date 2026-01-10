@@ -1,0 +1,109 @@
+{
+    "model_info": {
+        "model_type": "DecisionTreeClassifier",
+        "pipeline_steps": [
+            "add_features",
+            "preprocess",
+            "classifier"
+        ],
+        "best_params": {
+            "classifier__max_depth": 3,
+            "classifier__min_samples_leaf": 1,
+            "classifier__min_samples_split": 2
+        },
+        "training_date": "2026-01-09 20:43:57"
+    },
+    "data_info": {
+        "total_samples": 333,
+        "train_samples": 266,
+        "test_samples": 67,
+        "features": [
+            "island",
+            "bill_length_mm",
+            "bill_depth_mm",
+            "flipper_length_mm",
+            "body_mass_g",
+            "sex",
+            "year"
+        ],
+        "target_classes": [
+            "Adelie",
+            "Gentoo",
+            "Chinstrap"
+        ],
+        "class_distribution": {
+            "Adelie": 146,
+            "Gentoo": 119,
+            "Chinstrap": 68
+        }
+    },
+    "performance_metrics": {
+        "cv_f1_macro_mean": 0.9786638742420426,
+        "cv_f1_macro_std": 0.014421209963823982,
+        "cv_scores_macro": [
+            1.0,
+            0.9840455840455841,
+            0.9770347855454239,
+            0.9552042160737813,
+            0.9770347855454239
+        ],
+        "train_accuracy": 1.0,
+        "test_accuracy": 1.0,
+        "classification_report": {
+            "Adelie": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1-score": 1.0,
+                "support": 29.0
+            },
+            "Chinstrap": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1-score": 1.0,
+                "support": 14.0
+            },
+            "Gentoo": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1-score": 1.0,
+                "support": 24.0
+            },
+            "accuracy": 1.0,
+            "macro avg": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1-score": 1.0,
+                "support": 67.0
+            },
+            "weighted avg": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1-score": 1.0,
+                "support": 67.0
+            }
+        }
+    },
+    "hyperparameter_search": {
+        "param_grid": {
+            "classifier__max_depth": [
+                3,
+                5,
+                7,
+                10,
+                null
+            ],
+            "classifier__min_samples_split": [
+                2,
+                5,
+                10
+            ],
+            "classifier__min_samples_leaf": [
+                1,
+                2,
+                4
+            ]
+        },
+        "cv_folds": 5,
+        "best_cv_score_macro": 0.9786638742420426
+    }
+}
