@@ -1,0 +1,27 @@
+name: Model CD
+
+on:
+    push:
+        tags:
+            - 'v*.*.*'
+
+jobs:
+    build-and-push-ecr:
+      runs-on: ubuntu-latest
+      steps:
+
+    upload-artifacts:
+      runs-on: ubuntu-latest
+      needs: build-and-push-ecr
+
+    register-model:
+      runs-on: ubuntu-latest
+      needs: upload-artifacts
+    
+    deploy:
+      runs-on: ubuntu-latest
+      needs: register-model
+
+    monitoring:
+      runs-on: ubuntu-latest
+      needs: deploy
