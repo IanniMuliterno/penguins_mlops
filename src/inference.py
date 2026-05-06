@@ -6,6 +6,7 @@ from typing import Any, Iterable, Mapping, Sequence, Union
 import joblib
 import pandas as pd
 
+from src import logger
 
 DEFAULT_MODEL_PATH = Path("model_artifacts/penguin_classifier_model.pkl")
 DEFAULT_FEATURES_PATH = Path("model_artifacts/feature_names.json")
@@ -123,14 +124,14 @@ def main():
     preds = predict(df, model=model, feature_names_path=args.feature_names_path)
 
     predictions = preds.tolist()
-    print(f"Predictions: {predictions}")
+    logger.info(f"Predictions: {predictions}")
 
     if args.output_json:
         output_path = Path(args.output_json)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w") as f:
             json.dump({"predictions": predictions}, f, indent=2)
-        print(f"Saved predictions to {output_path}")
+        logger.info(f"Saved predictions to {output_path}")
 
 
 if __name__ == "__main__":

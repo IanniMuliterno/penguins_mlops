@@ -11,6 +11,8 @@ import json
 from datetime import datetime
 import os
 
+from src import logger
+
 # Load data
 penguins_df = load_penguins()
 
@@ -22,7 +24,7 @@ y = penguins_df['species']
 
 # Train-test split with fixed random state for reproducibility
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, train_size=0.8, random_state=42, stratify=y
+    X, y, train_size=0.7, random_state=42, stratify=y
 )
 
 # Create full pipeline including model
@@ -40,7 +42,7 @@ param_grid = {
     'classifier__min_samples_leaf': [1, 2, 4]
 }
 
-print("Performing Grid Search with 5-Fold Cross-Validation...")
+logger.info("Performing Grid Search with 5-Fold Cross-Validation...")
 grid_search = GridSearchCV(
     full_pipeline,
     param_grid,
@@ -68,21 +70,21 @@ y_test_pred = best_model.predict(X_test)
 train_accuracy = accuracy_score(y_train, y_train_pred)
 test_accuracy = accuracy_score(y_test, y_test_pred)
 
-print("\n" + "="*60)
-print("MODEL PERFORMANCE")
-print("="*60)
-print(f"\nBest Parameters: {grid_search.best_params_}")
-print(f"\nCross-Validation F1 (macro): {cv_scores.mean():.4f} (+/- {cv_scores.std():.4f})")
-print(f"Training Accuracy: {train_accuracy:.4f}")
-print(f"Test Accuracy: {test_accuracy:.4f}")
+logger.info("\n" + "="*60)
+logger.info("MODEL PERFORMANCE")
+logger.info("="*60)
+logger.info(f"\nBest Parameters: {grid_search.best_params_}")
+logger.info(f"\nCross-Validation F1 (macro): {cv_scores.mean():.4f} (+/- {cv_scores.std():.4f})")
+logger.info(f"Training Accuracy: {train_accuracy:.4f}")
+logger.info(f"Test Accuracy: {test_accuracy:.4f}")
 
-print("\n" + "-"*60)
-print("CLASSIFICATION REPORT (Test Set)")
-print("-"*60)
-print(classification_report(y_test, y_test_pred))
+logger.info("\n" + "-"*60)
+logger.info("CLASSIFICATION REPORT (Test Set)")
+logger.info("-"*60)
+logger.info(classification_report(y_test, y_test_pred))
 
-print("\nConfusion Matrix (Test Set):")
-print(confusion_matrix(y_test, y_test_pred))
+logger.info("\nConfusion Matrix (Test Set):")
+logger.info(confusion_matrix(y_test, y_test_pred))
 
 # Create metadata
 metadata = {
@@ -122,19 +124,19 @@ os.makedirs(artifacts_dir, exist_ok=True)
 # Save model
 model_path = os.path.join(artifacts_dir, "penguin_classifier_model.pkl")
 joblib.dump(best_model, model_path)
-print(f"\n✓ Model saved to: {model_path}")
+logger.info(f"\n✓ Model saved to: {model_path}")
 
 # Save metadata
 metadata_path = os.path.join(artifacts_dir, "model_metadata.json")
 with open(metadata_path, 'w') as f:
     json.dump(metadata, f, indent=4)
-print(f"✓ Metadata saved to: {metadata_path}")
+logger.info(f"✓ Metadata saved to: {metadata_path}")
 
 # Save feature names (for inference)
 feature_names_path = os.path.join(artifacts_dir, "feature_names.json")
 with open(feature_names_path, 'w') as f:
     json.dump({"features": list(X.columns)}, f, indent=4)
-print(f"✓ Feature names saved to: {feature_names_path}")
+logger.info(f"✓ Feature names saved to: {feature_names_path}")
 
 # Save predictions for analysis
 predictions_df = pd.DataFrame({
@@ -144,17 +146,17 @@ predictions_df = pd.DataFrame({
 })
 predictions_path = os.path.join(artifacts_dir, "test_predictions.csv")
 predictions_df.to_csv(predictions_path, index=False)
-print(f"✓ Test predictions saved to: {predictions_path}")
+logger.info(f"✓ Test predictions saved to: {predictions_path}")
 
-print("\n" + "="*60)
-print("All artifacts saved successfully!")
-print("="*60)
+logger.info("\n" + "="*60)
+logger.info("All artifacts saved successfully!")
+logger.info("="*60)
 
 # Example of loading the model for inference
-print("\n" + "="*60)
-print("EXAMPLE: Loading Model for Inference")
-print("="*60)
+logger.info("\n" + "="*60)
+logger.info("EXAMPLE: Loading Model for Inference")
+logger.info("="*60)
 loaded_model = joblib.load(model_path)
 sample_prediction = loaded_model.predict(X_test.iloc[:3])
-print(f"Sample predictions: {sample_prediction}")
-print(f"Actual values: {y_test.iloc[:3].values}")
+logger.info(f"Sample predictions: {sample_prediction}")
+logger.info(f"Actual values: {y_test.iloc[:3].values}")

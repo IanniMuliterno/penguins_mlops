@@ -1,5 +1,6 @@
+from src import logger
 def main():
-    print("Hello from penguins-mlops!")
+    logger.info("Hello from penguins-mlops!")
 
 
 if __name__ == "__main__":

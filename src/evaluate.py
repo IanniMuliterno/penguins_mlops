@@ -7,6 +7,7 @@ from palmerpenguins import load_penguins
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 
+from src import logger
 
 ARTIFACTS_DIR = Path("model_artifacts")
 MODEL_PATH = ARTIFACTS_DIR / "penguin_classifier_model.pkl"
@@ -50,4 +51,4 @@ def evaluate(model_path: Path = MODEL_PATH, metrics_path: Path = METRICS_PATH):
 
 if __name__ == "__main__":
     results = evaluate()
-    print(json.dumps(results, indent=2))
+    logger.info(json.dumps(results, indent=2))
