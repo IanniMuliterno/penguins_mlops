@@ -1,15 +1,16 @@
 import joblib
 import pandas as pd
-from palmerpenguins import load_penguins
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
+from src.data_loader import load_penguins_frame, normalize_model_input_schema
 from src.features import PenguinFeatureEngineer, preprocessor
 from src.inference import predict
 
 
 def _small_dataset():
-    return load_penguins().dropna().head(20)
+    df = load_penguins_frame().dropna().head(20)
+    return normalize_model_input_schema(df)
 
 
 def _make_pipeline():

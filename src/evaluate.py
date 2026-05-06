@@ -3,10 +3,10 @@ from pathlib import Path
 from typing import Tuple
 
 import joblib
-from palmerpenguins import load_penguins
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 
+from src.data_loader import load_penguins_frame, normalize_model_input_schema
 from src import logger
 
 ARTIFACTS_DIR = Path("model_artifacts")
@@ -16,10 +16,10 @@ METRICS_PATH = ARTIFACTS_DIR / "metrics.json"
 
 def load_data(test_size: float = 0.2, random_state: int = 42) -> Tuple:
     """Load and split the Palmer Penguins dataset."""
-    df = load_penguins()
+    df = load_penguins_frame()
     df.dropna(inplace=True)
 
-    X = df.drop("species", axis=1)
+    X = normalize_model_input_schema(df.drop("species", axis=1))
     y = df["species"]
 
     return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)

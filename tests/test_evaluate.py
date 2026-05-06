@@ -2,17 +2,18 @@ import json
 from pathlib import Path
 
 import joblib
-from palmerpenguins import load_penguins
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
+from src.data_loader import load_penguins_frame, normalize_model_input_schema
 from src.evaluate import evaluate
 from src.features import PenguinFeatureEngineer, preprocessor
 
 
 def _train_and_save(tmp_path: Path):
-    df = load_penguins().dropna()
-    X, y = df.drop("species", axis=1), df["species"]
+    df = load_penguins_frame().dropna()
+    X = normalize_model_input_schema(df.drop("species", axis=1))
+    y = df["species"]
 
     pipeline = Pipeline([
         ("add_features", PenguinFeatureEngineer()),

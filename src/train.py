@@ -1,15 +1,13 @@
-import mlflow.sklearn
-from palmerpenguins import load_penguins
 import pandas as pd
 import mlflow
 import mlflow.sklearn
-from mlflow import MlflowClient, log_metrics, log_params
-import numpy as np
+from mlflow.models import infer_signature
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from features import PenguinFeatureEngineer,preprocessor
+from src.data_loader import load_penguins_frame, normalize_model_input_schema
+from src.features import PenguinFeatureEngineer, preprocessor
 import joblib
 import json
 from datetime import datetime
@@ -20,13 +18,13 @@ TRACKING_URI = "sqlite:///mlflow.db"
 EXPERIMENT_NAME = "penguin_classification_experiment"
 MODEL_NAME = "penguin_classifier"
 # Load data
-penguins_df = load_penguins()
+penguins_df = load_penguins_frame()
 
 # setup mlflow
 mlflow.set_tracking_uri(TRACKING_URI)
 mlflow.set_registry_uri(TRACKING_URI)
 experiment = mlflow.set_experiment(EXPERIMENT_NAME)
-mlflow.sklearn.autolog(max_tuning_results=None)  
+mlflow.sklearn.autolog(max_tuning_runs=None, log_models=False)  # Disable autologging of models to avoid conflicts with manual logging
 # Simple feature cleaning due to low percentage of NA and the purpose of this project
 penguins_df.dropna(inplace=True)
 
@@ -34,7 +32,7 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
     mlflow.set_tags({"stage": "training",
                      "model": "DecisionTreeClassifier"})
     
-    X = penguins_df.drop(['species'], axis=1)
+    X = normalize_model_input_schema(penguins_df.drop(['species'], axis=1))
     y = penguins_df['species']
     train_size = 0.7
     # Train-test split with fixed random state for reproducibility
@@ -84,15 +82,35 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
     # Evaluate
     train_accuracy = accuracy_score(y_train, y_train_pred)
     test_accuracy = accuracy_score(y_test, y_test_pred)
+   
+    report_dict = classification_report(y_test, y_test_pred, output_dict=True)
 
-    mlflow.register_model(best_model, MODEL_NAME)
+    input_example = normalize_model_input_schema(X_train.iloc[:5])
+    signature = infer_signature(input_example, best_model.predict(input_example))
+
+    mlflow.sklearn.log_model(
+        best_model,
+        name=MODEL_NAME,
+        input_example=input_example,
+        signature=signature,
+    )
+    
     mlflow.log_metrics({ "cv_f1_macro_mean": float(cv_scores.mean()),
             "cv_f1_macro_std": float(cv_scores.std()),
-            "cv_scores_macro": [float(score) for score in cv_scores],
             "train_accuracy": float(train_accuracy),
             "test_accuracy": float(test_accuracy),
-            "classification_report": classification_report(y_test, y_test_pred, output_dict=True)})
+            "test_macro_precision": float(report_dict["macro avg"]["precision"]),
+            "test_macro_recall": float(report_dict["macro avg"]["recall"]),
+            "test_macro_f1": float(report_dict["macro avg"]["f1-score"]),
+            "test_weighted_f1": float(report_dict["weighted avg"]["f1-score"]),
+            })
 
+    mlflow.log_dict(report_dict, "metrics/classification_report.json")
+    #mlflow.log_dict(
+    #    {"cv_scores_macro": [float(score) for score in cv_scores]},
+    #    "metrics/cv_scores.json",
+    #)
+    
     logger.info("\n" + "="*60)
     logger.info("MODEL PERFORMANCE")
     logger.info("="*60)
@@ -131,7 +149,7 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
             "cv_scores_macro": [float(score) for score in cv_scores],
             "train_accuracy": float(train_accuracy),
             "test_accuracy": float(test_accuracy),
-            "classification_report": classification_report(y_test, y_test_pred, output_dict=True)
+            "classification_report": report_dict
         },
         "hyperparameter_search": {
             "param_grid": param_grid,

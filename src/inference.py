@@ -7,6 +7,7 @@ import joblib
 import pandas as pd
 
 from src import logger
+from src.data_loader import normalize_model_input_schema
 
 DEFAULT_MODEL_PATH = Path("model_artifacts/penguin_classifier_model.pkl")
 DEFAULT_FEATURES_PATH = Path("model_artifacts/feature_names.json")
@@ -65,7 +66,8 @@ def _align_features(df: pd.DataFrame, feature_order: Sequence[str]) -> pd.DataFr
         raise ValueError(f"Missing required feature columns for inference: {missing}")
 
     # Drop any unexpected columns and reorder to training-time order
-    return df[feature_order]
+    aligned = df[feature_order]
+    return normalize_model_input_schema(aligned)
 
 
 def predict(

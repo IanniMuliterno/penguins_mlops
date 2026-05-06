@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-from palmerpenguins import load_penguins
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
@@ -45,10 +43,16 @@ class PenguinFeatureEngineer(BaseEstimator, TransformerMixin):
         
         return X_transformed
     
-# Get column names from the dataset once and derive feature columns (exclude target)
-all_columns = load_penguins().columns.tolist()
-target_column = "species"
-feature_columns = [col for col in all_columns if col != target_column]
+# Raw training / inference schema expected by the pipeline.
+feature_columns = [
+    "island",
+    "bill_length_mm",
+    "bill_depth_mm",
+    "flipper_length_mm",
+    "body_mass_g",
+    "sex",
+    "year",
+]
 
 # Identify categorical columns (typically: island, sex) and remaining numerical columns
 categorical_cols = [col for col in feature_columns if col in ['island', 'sex']]

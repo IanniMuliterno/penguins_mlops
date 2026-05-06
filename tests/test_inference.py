@@ -2,10 +2,10 @@ import json
 from pathlib import Path
 
 import pandas as pd
-from palmerpenguins import load_penguins
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
+from src.data_loader import load_penguins_frame, normalize_model_input_schema
 from src.features import PenguinFeatureEngineer, preprocessor
 from src.inference import _align_features, load_feature_names, predict
 
@@ -26,8 +26,9 @@ def _feature_file(tmp_path: Path, features):
 
 
 def test_predict_aligns_columns(tmp_path):
-    df = load_penguins().dropna().head(10)
-    X, y = df.drop("species", axis=1), df["species"]
+    df = load_penguins_frame().dropna().head(10)
+    X = normalize_model_input_schema(df.drop("species", axis=1))
+    y = df["species"]
     feature_order = list(X.columns)  # training-time order
     feature_path = _feature_file(tmp_path, feature_order)
 
