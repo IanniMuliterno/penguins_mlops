@@ -8,3 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Logs and databases
+logs/
+mlruns/
+*.log
+*.sqlite
+JOURNAL.md
+mlflow.db
+ML_SYSTEM_DESIGN.md

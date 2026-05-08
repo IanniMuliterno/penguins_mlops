@@ -1,0 +1,5 @@
+outs:
+- md5: 33b492cb139285021f020077006e7cf9
+  size: 285
+  hash: md5
+  path: toy_extra_data.csv
