@@ -1,7 +1,7 @@
 import os
 import boto3
 import pandas as pd
-from palmerpenguins import load_penguins
+from src.data_loader import load_penguins_frame
 from sagemaker.model_monitor import DefaultModelMonitor
 from sagemaker.model_monitor.dataset_format import DatasetFormat
 import sagemaker
@@ -24,7 +24,7 @@ sm_client = boto_session.client("sagemaker")
 
 # Upload training features as baseline dataset (first time only)
 baseline_local = "/tmp/baseline.csv"
-penguins = load_penguins().dropna()
+penguins = load_penguins_frame().dropna()
 penguins.drop(columns=["species"]).to_csv(baseline_local, index=False)
 sm_session.upload_data(path=baseline_local, bucket=s3_bucket, key_prefix="monitoring/baseline-data")
 logger.info(f"Baseline data uploaded to {baseline_data_uri}")

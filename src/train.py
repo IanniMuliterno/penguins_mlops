@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split, cross_val_score, GridSearc
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from src.data_loader import load_penguins_frame, normalize_model_input_schema
+from src.data_loader import TRAIN_SIZE, RANDOM_STATE, load_penguins_frame, normalize_model_input_schema
 from src.features import PenguinFeatureEngineer, preprocessor
 import joblib
 import json
@@ -34,15 +34,15 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
     
     X = normalize_model_input_schema(penguins_df.drop(['species'], axis=1))
     y = penguins_df['species']
-    train_size = 0.7
+    train_size = TRAIN_SIZE
     # Train-test split with fixed random state for reproducibility
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, train_size=train_size, random_state=42, stratify=y
+        X, y, train_size=train_size, random_state=RANDOM_STATE, stratify=y
     )
     mlflow.log_param("train_size", train_size)
     # Create full pipeline including model
     # Pipeline order: add engineered features first, then preprocess, then model
-    rnd_state = 42
+    rnd_state = RANDOM_STATE
     full_pipeline = Pipeline([
         ("add_features", PenguinFeatureEngineer()),
         ("preprocess", preprocessor),

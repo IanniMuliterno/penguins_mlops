@@ -1,25 +1,19 @@
 from __future__ import annotations
 
-import warnings
+from pathlib import Path
 
 import pandas as pd
 
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        "ignore",
-        message="pkg_resources is deprecated as an API.*",
-        category=UserWarning,
-    )
-    from palmerpenguins import load_penguins as _load_penguins
-
-
 FLOAT_INPUT_COLUMNS = ("year",)
+DATA_PATH = Path(__file__).resolve().parent / "data" / "penguins.csv"
+TRAIN_SIZE = 0.7
+RANDOM_STATE = 42
 
 
 def load_penguins_frame() -> pd.DataFrame:
-    """Load the Palmer Penguins dataset while hiding an upstream deprecation warning."""
-    return _load_penguins()
+    """Load the versioned Palmer Penguins dataset from the repository."""
+    return pd.read_csv(DATA_PATH)
 
 
 def normalize_model_input_schema(df: pd.DataFrame) -> pd.DataFrame:

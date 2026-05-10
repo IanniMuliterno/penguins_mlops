@@ -6,7 +6,7 @@ import joblib
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 
-from src.data_loader import load_penguins_frame, normalize_model_input_schema
+from src.data_loader import RANDOM_STATE, TRAIN_SIZE, load_penguins_frame, normalize_model_input_schema
 from src import logger
 
 ARTIFACTS_DIR = Path("model_artifacts")
@@ -14,15 +14,15 @@ MODEL_PATH = ARTIFACTS_DIR / "penguin_classifier_model.pkl"
 METRICS_PATH = ARTIFACTS_DIR / "metrics.json"
 
 
-def load_data(test_size: float = 0.2, random_state: int = 42) -> Tuple:
-    """Load and split the Palmer Penguins dataset."""
+def load_data(train_size: float = TRAIN_SIZE, random_state: int = RANDOM_STATE) -> Tuple:
+    """Load and split the Palmer Penguins dataset using the training split contract."""
     df = load_penguins_frame()
     df.dropna(inplace=True)
 
     X = normalize_model_input_schema(df.drop("species", axis=1))
     y = df["species"]
 
-    return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)
+    return train_test_split(X, y, train_size=train_size, random_state=random_state, stratify=y)
 
 
 def evaluate(model_path: Path = MODEL_PATH, metrics_path: Path = METRICS_PATH):
