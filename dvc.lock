@@ -1,0 +1,62 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: src/data/penguins.csv
+      hash: md5
+      md5: 8889e0157c6730a9c051417f6c6beeca
+      size: 16735
+    - path: src/data_loader.py
+      hash: md5
+      md5: 65f3ff73290d20bdb79255fc95feac60
+      size: 1008
+    - path: src/features.py
+      hash: md5
+      md5: 87c09849aff8d099dc9da071df9e1579
+      size: 2485
+    - path: src/train.py
+      hash: md5
+      md5: 359afbe8e179cfd5a203329a58c99130
+      size: 7828
+    outs:
+    - path: model_artifacts/feature_names.json
+      hash: md5
+      md5: 48d48117bf85db1b78760beb9dfe2900
+      size: 178
+    - path: model_artifacts/model_metadata.json
+      hash: md5
+      md5: 7dcd11afb6742ed5ce64c052d572b520
+      size: 2777
+    - path: model_artifacts/penguin_classifier_model.pkl
+      hash: md5
+      md5: cc831c93eda9e968f8a3d68418a2cd52
+      size: 5667
+    - path: model_artifacts/test_predictions.csv
+      hash: md5
+      md5: ac76a768f250cec32b07abc9968bc1cf
+      size: 2045
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: model_artifacts/penguin_classifier_model.pkl
+      hash: md5
+      md5: cc831c93eda9e968f8a3d68418a2cd52
+      size: 5667
+    - path: src/data/penguins.csv
+      hash: md5
+      md5: 8889e0157c6730a9c051417f6c6beeca
+      size: 16735
+    - path: src/data_loader.py
+      hash: md5
+      md5: 65f3ff73290d20bdb79255fc95feac60
+      size: 1008
+    - path: src/evaluate.py
+      hash: md5
+      md5: 2a84d4f54a942a79bfe9c331d292b04b
+      size: 1869
+    outs:
+    - path: model_artifacts/metrics.json
+      hash: md5
+      md5: a1fb345894d93fab085c9a366a9bc80e
+      size: 695
