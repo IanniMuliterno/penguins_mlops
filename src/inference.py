@@ -3,13 +3,14 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence, Union
 
-import joblib
 import pandas as pd
+import skops.io as sio
 
 from src import logger
 from src.data_loader import normalize_model_input_schema
+from src.features import SKOPS_TRUSTED_TYPES
 
-DEFAULT_MODEL_PATH = Path("model_artifacts/penguin_classifier_model.pkl")
+DEFAULT_MODEL_PATH = Path("model_artifacts/penguin_classifier_model.skops")
 DEFAULT_FEATURES_PATH = Path("model_artifacts/feature_names.json")
 
 
@@ -18,7 +19,7 @@ def load_model(model_path: Union[str, Path] = DEFAULT_MODEL_PATH):
     model_path = Path(model_path)
     if not model_path.exists():
         raise FileNotFoundError(f"Model file not found at {model_path}. Train the model first.")
-    return joblib.load(model_path)
+    return sio.load(model_path, trusted=SKOPS_TRUSTED_TYPES)
 
 
 def _to_dataframe(input_data: Union[pd.DataFrame, Mapping, Iterable]) -> pd.DataFrame:

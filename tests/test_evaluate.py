@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-import joblib
+import skops.io as sio
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
@@ -22,8 +22,8 @@ def _train_and_save(tmp_path: Path):
     ])
     pipeline.fit(X, y)
 
-    model_path = tmp_path / "model.pkl"
-    joblib.dump(pipeline, model_path)
+    model_path = tmp_path / "model.skops"
+    sio.dump(pipeline, model_path)
     return model_path
 
 

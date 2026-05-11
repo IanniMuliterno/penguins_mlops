@@ -67,3 +67,5 @@ preprocessor = ColumnTransformer(
     verbose_feature_names_out=False,
     remainder="passthrough",  # keep engineered features that are added upstream
 )
+
+SKOPS_TRUSTED_TYPES = ["src.features.PenguinFeatureEngineer"]

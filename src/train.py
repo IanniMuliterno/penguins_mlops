@@ -1,22 +1,46 @@
 import pandas as pd
 import mlflow
 import mlflow.sklearn
+import skops
 from mlflow.models import infer_signature
+import skops.io as sio
+import sklearn
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from src.data_loader import TRAIN_SIZE, RANDOM_STATE, load_penguins_frame, normalize_model_input_schema
-from src.features import PenguinFeatureEngineer, preprocessor
-import joblib
+from src.features import PenguinFeatureEngineer, SKOPS_TRUSTED_TYPES, preprocessor
 import json
 from datetime import datetime
 import os
+import sys
 
 from src import logger
 TRACKING_URI = "sqlite:///mlflow.db"
 EXPERIMENT_NAME = "penguin_classification_experiment"
 MODEL_NAME = "penguin_classifier"
+
+
+def _model_conda_env() -> dict:
+    return {
+        "name": "mlflow-env",
+        "channels": ["conda-forge"],
+        "dependencies": [
+            f"python={sys.version.split()[0]}",
+            "pip",
+            {
+                "pip": [
+                    f"mlflow=={mlflow.__version__}",
+                    f"pandas=={pd.__version__}",
+                    f"scikit-learn=={sklearn.__version__}",
+                    f"skops=={skops.__version__}",
+                ]
+            },
+        ],
+    }
+
+
 # Load data
 penguins_df = load_penguins_frame()
 
@@ -51,8 +75,8 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
     mlflow.log_param("random_state",rnd_state)
     # Hyperparameter tuning with cross-validation
     param_grid = {
-        'classifier__max_depth': [3, 5, 7, None],
-        'classifier__min_samples_split': [2, 5, 10],
+        'classifier__max_depth': [1, 2, 3, None],
+        'classifier__min_samples_split': [2, 5],
         'classifier__min_samples_leaf': [1, 2, 4]
     }
 
@@ -63,7 +87,8 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
         cv=5,
         scoring='f1_macro',  # multiclass friendly metric
         n_jobs=-1,
-        verbose=1
+        # Keep sklearn autologging param capture stable: Pipeline.verbose is False.
+        verbose=False
     )
 
     grid_search.fit(X_train, y_train)
@@ -93,6 +118,10 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
         name=MODEL_NAME,
         input_example=input_example,
         signature=signature,
+        conda_env=_model_conda_env(),
+        code_paths=["src"],
+        serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_SKOPS,
+        skops_trusted_types=SKOPS_TRUSTED_TYPES,
     )
     
     mlflow.log_metrics({ "cv_f1_macro_mean": float(cv_scores.mean()),
@@ -163,8 +192,8 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
     os.makedirs(artifacts_dir, exist_ok=True)
 
     # Save model
-    model_path = os.path.join(artifacts_dir, "penguin_classifier_model.pkl")
-    joblib.dump(best_model, model_path)
+    model_path = os.path.join(artifacts_dir, "penguin_classifier_model.skops")
+    sio.dump(best_model, model_path)
     logger.info(f"\n✓ Model saved to: {model_path}")
 
     # Save metadata
@@ -197,7 +226,7 @@ with mlflow.start_run(run_name="decision_tree_classifier") as run:
     logger.info("\n" + "="*60)
     logger.info("EXAMPLE: Loading Model for Inference")
     logger.info("="*60)
-    loaded_model = joblib.load(model_path)
+    loaded_model = sio.load(model_path, trusted=SKOPS_TRUSTED_TYPES)
     sample_prediction = loaded_model.predict(X_test.iloc[:3])
     logger.info(f"Sample predictions: {sample_prediction}")
     logger.info(f"Actual values: {y_test.iloc[:3].values}")

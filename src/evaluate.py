@@ -2,15 +2,15 @@ import json
 from pathlib import Path
 from typing import Tuple
 
-import joblib
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 
 from src.data_loader import RANDOM_STATE, TRAIN_SIZE, load_penguins_frame, normalize_model_input_schema
+from src.inference import load_model
 from src import logger
 
 ARTIFACTS_DIR = Path("model_artifacts")
-MODEL_PATH = ARTIFACTS_DIR / "penguin_classifier_model.pkl"
+MODEL_PATH = ARTIFACTS_DIR / "penguin_classifier_model.skops"
 METRICS_PATH = ARTIFACTS_DIR / "metrics.json"
 
 
@@ -30,7 +30,7 @@ def evaluate(model_path: Path = MODEL_PATH, metrics_path: Path = METRICS_PATH):
     if not Path(model_path).exists():
         raise FileNotFoundError(f"Model artifact not found at {model_path}. Train the model first.")
 
-    model = joblib.load(model_path)
+    model = load_model(model_path)
     _, X_test, _, y_test = load_data()
 
     y_pred = model.predict(X_test)
