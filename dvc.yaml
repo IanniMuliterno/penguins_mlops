@@ -7,7 +7,7 @@ stages:
       - src/features.py
       - src/data/penguins.csv
     outs:
-      - model_artifacts/penguin_classifier_model.pkl
+      - model_artifacts/penguin_classifier_model.skops
       - model_artifacts/model_metadata.json
       - model_artifacts/feature_names.json
       - model_artifacts/test_predictions.csv
@@ -18,6 +18,6 @@ stages:
       - src/evaluate.py
       - src/data_loader.py
       - src/data/penguins.csv
-      - model_artifacts/penguin_classifier_model.pkl
+      - model_artifacts/penguin_classifier_model.skops
     metrics:
       - model_artifacts/metrics.json

@@ -3,3 +3,4 @@
 /model_metadata.json
 /feature_names.json
 /test_predictions.csv
+/penguin_classifier_model.skops
