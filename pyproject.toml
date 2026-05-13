@@ -16,6 +16,8 @@ dependencies = [
     "pytest>=8.3.0",
     "mlflow>=3.12.0",
     "dvc>=3.67.1",
+    "onnxruntime<1.20.0",
+    "sagemaker>=3.10.1",
 ]
 
 [tool.pytest.ini_options]
