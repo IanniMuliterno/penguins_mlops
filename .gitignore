@@ -18,3 +18,7 @@ mlruns/
 JOURNAL.md
 mlflow.db
 ML_SYSTEM_DESIGN.md
+
+# terraform
+infra/*.tfvars
+infra/.terraform/
