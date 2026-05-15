@@ -18,6 +18,7 @@ dependencies = [
     "dvc>=3.67.1",
     "onnxruntime<1.20.0",
     "sagemaker>=3.10.1",
+    "dvc-s3>=3.3.0",
 ]
 
 [tool.pytest.ini_options]

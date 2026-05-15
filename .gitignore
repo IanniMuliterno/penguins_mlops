@@ -22,3 +22,6 @@ ML_SYSTEM_DESIGN.md
 # terraform
 infra/*.tfvars
 infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/.terraform.lock.hcl

@@ -33,6 +33,15 @@ jobs:
               run: |
                 uv sync
 
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: us-east-1
+            
+            - name: Pull DVC data
+              run: uv run dvc pull
+
             - name: runs python tests
               run: |
                 uv run pytest tests/ -v
