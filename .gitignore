@@ -9,6 +9,7 @@ wheels/
 # Virtual environments and env vars
 .venv
 .env
+.secrets
 
 # Logs and databases
 logs/
