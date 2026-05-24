@@ -1,27 +1,35 @@
-  output "bucket_name" {
-    value = aws_s3_bucket.s3_bkt.bucket
-  }
+output "bucket_name" {
+  value = aws_s3_bucket.s3_bkt.bucket
+}
 
-  output "execution_role_arn" {
-    value = aws_iam_role.sagemaker_execution.arn
-  }
+output "execution_role_arn" {
+  value = aws_iam_role.sagemaker_execution.arn
+}
 
-  output "aws_region" {
-    value = var.aws_region
-  }
+output "aws_region" {
+  value = var.aws_region
+}
 
-  output "ecr_repository_name" {
-    value = var.ecr_repository_name
-  }
+output "ecr_repository_name" {
+  value = aws_ecr_repository.inference.name
+}
 
-  output "ecr_repository_url" {
-    value ="${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.ecr_repository_name}"
-  }
+output "erc_repository_arn" {
+  value = aws_ecr_repository.inference.arn
+}
 
-  output "github_actions_role_arn" {
-    value = aws_iam_role.github_actions_deploy.arn
-  }
+output "ecr_repository_url" {
+  value = aws_ecr_repository.inference.repository_url
+}
 
-  output "model_package_group_name" {
-    value = var.model_package_group_name
-  }
+output "github_actions_role_arn" {
+  value = aws_iam_role.github_actions_deploy.arn
+}
+
+output "model_package_group_name" {
+  value = aws_sagemaker_model_package_group.registry.model_package_group_name
+}
+
+output "model_package_group_arn" {
+  value = aws_sagemaker_model_package_group.registry.arn
+}

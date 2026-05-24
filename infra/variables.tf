@@ -16,27 +16,27 @@ variable "aws_region" {
 }
 
 variable "project_name" {
-  type = string
+  type    = string
   default = "penguins classifier"
 }
 
 variable "environment" {
-  type = string
+  type    = string
   default = "dev"
-  
+
 }
 
 variable "ecr_repository_name" {
-  type = string
-  default = "penguins_ecr"
+  type    = string
+  default = "penguins-ecr"
 }
 
 variable "model_package_group_name" {
-  type = string
-  default = "penguins_model_pkg_group"
+  type    = string
+  default = "penguins-model-pkg-group"
 }
 
 variable "github_repository" {
-  type = string
+  type    = string
   default = "IanMuliterno/penguins_mlops"
 }
