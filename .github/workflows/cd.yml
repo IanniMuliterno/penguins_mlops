@@ -88,7 +88,7 @@ jobs:
             --inference-specification "{
               \"Containers\": [{
                 \"Image\": \"${IMAGE_URI}\",
-                \"ModelDataUrl\": \"s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/penguin_classifier_model.pkl\"
+                \"ModelDataUrl\": \"s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/penguin_classifier_model.skops\"
               }],
               \"SupportedContentTypes\": [\"text/csv\"],
               \"SupportedResponseMIMETypes\": [\"application/json\"]
