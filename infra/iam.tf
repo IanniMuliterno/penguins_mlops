@@ -126,9 +126,31 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
         Effect = "Allow"
         Action = [
           "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability", "ecr:GetAuthorizationToken", "ecr:DescribeRepositories"
+          "ecr:BatchCheckLayerAvailability", "ecr:GetAuthorizationToken", "ecr:DescribeRepositories",
+          "ecr:InitiateLayerUpload", "ecr:UploadLayerPart", "ecr:CompleteLayerUpload", "ecr:PutImage"
         ]
         Resource = "*"
+      },
+      {
+        Sid    = "ECRAuth"
+        Effect = "Allow"
+        Action = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
+        Sid    = "ECRPushPull"
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:DescribeRepositories",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+        ]
+        Resource = aws_ecr_repository.inference.arn
       },
       {
         Sid      = "PassRoleToSageMaker"
