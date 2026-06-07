@@ -82,8 +82,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    outputs:
-      model_package_arn: ${{ steps.register.outputs.model_package_arn }}
     steps:
       - uses: actions/checkout@v4
 
@@ -119,9 +117,10 @@ jobs:
             --query "ModelPackageArn" \
             --output text)
           echo "model_package_arn=${ARN}" >> $GITHUB_OUTPUT
-          - name: Set up Python
-          uses: actions/setup-python@v5
-          with:
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
             python-version: "3.10"
 
       - name: Install boto3
