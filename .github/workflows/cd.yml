@@ -38,8 +38,8 @@ jobs:
       - name: Export image URI
         id: set-uri
         run: |
-          echo "IMAGE_URI=$IMAGE_URI" \
           echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}"
 
   upload-artifacts:
     name: Upload model artifacts to S3
@@ -77,13 +77,17 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
-
+      - name: Debug IMAGE_URI
+        env: 
+          IMAGE_URI: ${{ needs.build-and-push-ecr.outputs.image_uri }}
+        run: |
+          echo "IMAGE_URI=$IMAGE_URI"
+          test -n "$IMAGE_URI" || { echo "IMAGE_URI is empty"; exit 1;}
       - name: Register model package
         id: register
         env:
           IMAGE_URI: ${{ needs.build-and-push-ecr.outputs.image_uri }}
         run: |
-          echo "IMAGE_URI=$IMAGE_URI" && \
           ARN=$(aws sagemaker create-model-package \
             --model-package-group-name ${{ secrets.MODEL_PACKAGE_GROUP }} \
             --model-package-description "Penguin classifier ${{ github.ref_name }}" \
