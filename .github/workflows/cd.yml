@@ -13,7 +13,7 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      image_uri: ${{ steps.set-uri.outputs.image_uri }}
+      image_uri: ${{ steps.set_uri.outputs.image_uri }}
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +24,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Log in to ECR
-        id: login-ecr
+        id: login_ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push inference image
@@ -33,13 +33,13 @@ jobs:
           context: .
           file: Dockerfile.inference
           push: true
-          tags: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}
+          tags: ${{ steps.login_ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}
 
       - name: Export image URI
-        id: set-uri
+        id: set_uri
         run: |
-          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}"
+          echo "image_uri=${{ steps.login_ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "image_uri=${{ steps.login_ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}"
 
   upload_artifacts:
     name: Upload model artifacts to S3
