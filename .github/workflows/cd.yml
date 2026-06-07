@@ -146,6 +146,7 @@ jobs:
 
       - name: Deploy endpoint
         env:
+          PYTHONPATH: ${{ github.workspace }}
           MODEL_PACKAGE_ARN: ${{ needs.register_model.outputs.model_package_arn }}
           ENDPOINT_NAME: ${{ secrets.SAGEMAKER_ENDPOINT_NAME }}
           EXECUTION_ROLE: ${{ secrets.SAGEMAKER_EXECUTION_ROLE }}
@@ -180,6 +181,7 @@ jobs:
 
       - name: Setup monitoring
         env:
+          PYTHONPATH: ${{ github.workspace }}
           ENDPOINT_NAME: ${{ secrets.SAGEMAKER_ENDPOINT_NAME }}
           EXECUTION_ROLE: ${{ secrets.SAGEMAKER_EXECUTION_ROLE }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
