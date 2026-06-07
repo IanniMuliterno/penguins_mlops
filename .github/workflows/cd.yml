@@ -64,7 +64,7 @@ jobs:
 
       - name: verify required artifacts
         run: |
-          test -f model_artifacts/prnguin_classifier_model.skops
+          test -f model_artifacts/penguin_classifier_model.skops
           test -f model_artifacts/feature_names.json
 
       - name: Package model artifacts
