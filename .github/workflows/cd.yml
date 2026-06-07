@@ -119,46 +119,29 @@ jobs:
             --query "ModelPackageArn" \
             --output text)
           echo "model_package_arn=${ARN}" >> $GITHUB_OUTPUT
-
-  deploy:
-    name: Deploy to SageMaker endpoint
-    runs-on: ubuntu-latest
-    needs: register_model
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+          - name: Set up Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: "3.10"
 
       - name: Install boto3
         run: pip install boto3
 
       - name: Deploy endpoint
         env:
-          PYTHONPATH: ${{ github.workspace }}
-          MODEL_PACKAGE_ARN: ${{ needs.register_model.outputs.model_package_arn }}
-          ENDPOINT_NAME: ${{ secrets.SAGEMAKER_ENDPOINT_NAME }}
-          EXECUTION_ROLE: ${{ secrets.SAGEMAKER_EXECUTION_ROLE }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          MODEL_VERSION: ${{ github.ref_name }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+            PYTHONPATH: ${{ github.workspace }}
+            MODEL_PACKAGE_ARN: ${{ steps.register.outputs.model_package_arn }}
+            ENDPOINT_NAME: ${{ secrets.SAGEMAKER_ENDPOINT_NAME }}
+            EXECUTION_ROLE: ${{ secrets.SAGEMAKER_EXECUTION_ROLE }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+            MODEL_VERSION: ${{ github.ref_name }}
+            S3_BUCKET: ${{ secrets.S3_BUCKET }}
         run: python scripts/deploy_endpoint.py
 
   monitoring:
     name: Configure SageMaker Model Monitor
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: register_model
     permissions:
       id-token: write
       contents: read
