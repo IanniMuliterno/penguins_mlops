@@ -122,16 +122,6 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
         Resource = "*"
       },
       {
-        Sid    = "ECRRead"
-        Effect = "Allow"
-        Action = [
-          "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability", "ecr:GetAuthorizationToken", "ecr:DescribeRepositories",
-          "ecr:InitiateLayerUpload", "ecr:UploadLayerPart", "ecr:CompleteLayerUpload", "ecr:PutImage"
-        ]
-        Resource = "*"
-      },
-      {
         Sid    = "ECRAuth"
         Effect = "Allow"
         Action = ["ecr:GetAuthorizationToken"]
