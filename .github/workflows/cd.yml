@@ -12,8 +12,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    outputs:
-      image_uri: ${{ steps.set_uri.outputs.image_uri }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,12 +32,6 @@ jobs:
           file: Dockerfile.inference
           push: true
           tags: ${{ steps.login_ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}
-
-      - name: Export image URI
-        id: set_uri
-        run: |
-          echo "image_uri=${{ steps.login_ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          echo "image_uri=${{ steps.login_ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}"
 
   upload_artifacts:
     name: Upload model artifacts to S3
@@ -77,16 +69,17 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Debug IMAGE_URI
-        env: 
-          IMAGE_URI: ${{ needs.build_and_push_ecr.outputs.image_uri }}
+      - name: Compute IMAGE_URI
+        id: image_uri
         run: |
-          echo "IMAGE_URI=$IMAGE_URI"
-          test -n "$IMAGE_URI" || { echo "IMAGE_URI is empty"; exit 1;}
+            ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+            IMAGE_URI="${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}"
+            echo "image_uri=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+            echo "IMAGE_URI=$IMAGE_URI"
       - name: Register model package
         id: register
         env:
-          IMAGE_URI: ${{ needs.build_and_push_ecr.outputs.image_uri }}
+          IMAGE_URI: ${{ steps.image_uri.outputs.image_uri }}
         run: |
           ARN=$(aws sagemaker create-model-package \
             --model-package-group-name ${{ secrets.MODEL_PACKAGE_GROUP }} \
