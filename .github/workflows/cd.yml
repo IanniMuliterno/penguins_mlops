@@ -48,9 +48,32 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Pull DVC artifacts
+        run: uv run dvc pull
+
+      - name: verify required artifacts
+        run: |
+          test -f model_artifacts/prnguin_classifier_model.skops
+          test -f model_artifacts/feature_names.json
+
+      - name: Package model artifacts
+        run: |
+          tar -czf model.tar.gz -C model_artifacts penguin_classifier_model.skops feature_names.json
+
       - name: Upload artifacts
         run: |
-          aws s3 cp model_artifacts/ s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/ --recursive
+          aws s3 cp model.tar.gz s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/model.tar.gz
 
   register_model:
     name: Register model in SageMaker Model Registry
@@ -87,7 +110,7 @@ jobs:
             --inference-specification "{
               \"Containers\": [{
                 \"Image\": \"${IMAGE_URI}\",
-                \"ModelDataUrl\": \"s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/penguin_classifier_model.skops\"
+                \"ModelDataUrl\": \"s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/model.tar.gz\"
               }],
               \"SupportedContentTypes\": [\"text/csv\"],
               \"SupportedResponseMIMETypes\": [\"application/json\"]
