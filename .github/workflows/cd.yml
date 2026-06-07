@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build-and-push-ecr:
+  build_and_push_ecr:
     name: Build and push to ECR
     runs-on: ubuntu-latest
     permissions:
@@ -41,7 +41,7 @@ jobs:
           echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
           echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.ref_name }}"
 
-  upload-artifacts:
+  upload_artifacts:
     name: Upload model artifacts to S3
     runs-on: ubuntu-latest
     permissions:
@@ -60,10 +60,10 @@ jobs:
         run: |
           aws s3 cp model_artifacts/ s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/ --recursive
 
-  register-model:
+  register_model:
     name: Register model in SageMaker Model Registry
     runs-on: ubuntu-latest
-    needs: [build-and-push-ecr, upload-artifacts]
+    needs: [build_and_push_ecr, upload_artifacts]
     permissions:
       id-token: write
       contents: read
@@ -79,14 +79,14 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Debug IMAGE_URI
         env: 
-          IMAGE_URI: ${{ needs.build-and-push-ecr.outputs.image_uri }}
+          IMAGE_URI: ${{ needs.build_and_push_ecr.outputs.image_uri }}
         run: |
           echo "IMAGE_URI=$IMAGE_URI"
           test -n "$IMAGE_URI" || { echo "IMAGE_URI is empty"; exit 1;}
       - name: Register model package
         id: register
         env:
-          IMAGE_URI: ${{ needs.build-and-push-ecr.outputs.image_uri }}
+          IMAGE_URI: ${{ needs.build_and_push_ecr.outputs.image_uri }}
         run: |
           ARN=$(aws sagemaker create-model-package \
             --model-package-group-name ${{ secrets.MODEL_PACKAGE_GROUP }} \
@@ -107,7 +107,7 @@ jobs:
   deploy:
     name: Deploy to SageMaker endpoint
     runs-on: ubuntu-latest
-    needs: register-model
+    needs: register_model
     permissions:
       id-token: write
       contents: read
@@ -130,7 +130,7 @@ jobs:
 
       - name: Deploy endpoint
         env:
-          MODEL_PACKAGE_ARN: ${{ needs.register-model.outputs.model_package_arn }}
+          MODEL_PACKAGE_ARN: ${{ needs.register_model.outputs.model_package_arn }}
           ENDPOINT_NAME: ${{ secrets.SAGEMAKER_ENDPOINT_NAME }}
           EXECUTION_ROLE: ${{ secrets.SAGEMAKER_EXECUTION_ROLE }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
