@@ -115,7 +115,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
         Action = [
           "sagemaker:CreateModel", "sagemaker:CreateEndpointConfig",
           "sagemaker:CreateEndpoint", "sagemaker:UpdateEndpoint", "sagemaker:DescribeEndpoint",
-          "sagemaker:DescribeEndpointConfig", "sagemaker:ListEndpoints",
+          "sagemaker:DescribeEndpointConfig", "sagemaker:DescribeModel","sagemaker:ListEndpoints",
           "sagemaker:CreateModelPackage", "sagemaker:UpdateModelPackage",
           "sagemaker:DescribeModelPackage", "sagemaker:ListModelPackages"
         ]
