@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from pathlib import Path
 from src.inference import load_model, load_feature_names, _to_dataframe, _align_features
+from src import logger
 
 MODEL_DIR = Path("/opt/ml/model")
 MODEL_PATH = MODEL_DIR / "penguin_classifier_model.skops"
@@ -8,7 +9,9 @@ FEATURES_PATH = MODEL_DIR / "feature_names.json"
 
 app = Flask(__name__)
 
+logger.info("Loading SageMaker model from %s", MODEL_PATH)
 model = load_model(MODEL_PATH)
+logger.info("Loading feature schema from %s", FEATURES_PATH)
 feature_order = load_feature_names(FEATURES_PATH)
 
 def predict_payload(payload):
@@ -35,4 +38,5 @@ def invocations():
     return jsonify(result), 200
 
 if __name__ == "__main__":
+    logger.info("Starting SageMaker inference server on port 8080")
     app.run(host="0.0.0.0", port=8080)

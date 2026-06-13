@@ -9,7 +9,11 @@ WORKDIR /opt/program
 RUN pip install --no-cache-dir pandas scikit-learn skops flask
 
 COPY src ./src
+COPY docker/serve /usr/local/bin/serve
+
+RUN chmod +x /usr/local/bin/serve
 
 EXPOSE 8080
 
-CMD [ "python", "-m", "src.sagemaker_inference" ]
+ENTRYPOINT ["/usr/local/bin/serve"]
+CMD ["serve"]

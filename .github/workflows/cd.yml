@@ -110,7 +110,7 @@ jobs:
                 \"Image\": \"${IMAGE_URI}\",
                 \"ModelDataUrl\": \"s3://${{ secrets.S3_BUCKET }}/models/${{ github.ref_name }}/model.tar.gz\"
               }],
-              \"SupportedContentTypes\": [\"text/csv\"],
+              \"SupportedContentTypes\": [\"application/json\"],
               \"SupportedResponseMIMETypes\": [\"application/json\"]
             }" \
             --model-approval-status "Approved" \
