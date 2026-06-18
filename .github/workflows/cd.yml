@@ -158,8 +158,11 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
       - name: Install dependencies
-        run: pip install boto3 sagemaker palmerpenguins pandas
+        run: uv sync
 
       - name: Setup monitoring
         env:
