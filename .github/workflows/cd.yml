@@ -8,7 +8,7 @@ on:
 concurrency:
     group: production-endpoint-deployment
     cancel-in-progress: false
-    
+
 jobs:
   build_and_push_ecr:
     name: Build and push to ECR
@@ -127,8 +127,8 @@ jobs:
         with:
             python-version: "3.10"
 
-      - name: Install boto3
-        run: pip install boto3
+      - name: Install dependencies
+        run: uv sync
 
       - name: Deploy endpoint
         env:
@@ -139,7 +139,7 @@ jobs:
             AWS_REGION: ${{ secrets.AWS_REGION }}
             MODEL_VERSION: ${{ github.ref_name }}
             S3_BUCKET: ${{ secrets.S3_BUCKET }}
-        run: python scripts/deploy_endpoint.py
+        run: uv run scripts/deploy_endpoint.py
 
   monitoring:
     name: Configure SageMaker Model Monitor
@@ -175,4 +175,4 @@ jobs:
           EXECUTION_ROLE: ${{ secrets.SAGEMAKER_EXECUTION_ROLE }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: python scripts/setup_monitoring.py
+        run: uv run python scripts/setup_monitoring.py
