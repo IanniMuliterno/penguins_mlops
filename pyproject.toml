@@ -17,7 +17,7 @@ dependencies = [
     "mlflow>=3.12.0",
     "dvc>=3.67.1",
     "onnxruntime<1.20.0",
-    "sagemaker>=3.10.1",
+    "sagemaker>=2,<3",
     "dvc-s3>=3.3.0",
 ]
 

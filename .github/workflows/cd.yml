@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'
 
+concurrency:
+    group: production-endpoint-deployment
+    cancel-in-progress: false
+    
 jobs:
   build_and_push_ecr:
     name: Build and push to ECR
