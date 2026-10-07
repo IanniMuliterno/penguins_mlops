@@ -68,4 +68,7 @@ preprocessor = ColumnTransformer(
     remainder="passthrough",  # keep engineered features that are added upstream
 )
 
-SKOPS_TRUSTED_TYPES = ["src.features.PenguinFeatureEngineer"]
+ SKOPS_TRUSTED_TYPES = [
+      "src.features.PenguinFeatureEngineer",
+      "sklearn.tree._tree.Tree",
+  ]
