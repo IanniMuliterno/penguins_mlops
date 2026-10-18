@@ -68,6 +68,7 @@ jobs:
 
       - name: Upload monitoring baseline
         env:
+          PYTHONPATH: ${{ github.workspace }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           MODEL_VERSION: ${{ github.ref_name }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
