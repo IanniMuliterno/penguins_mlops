@@ -51,7 +51,7 @@ jobs:
             
             - name: Pull DVC data
               if: ${{ !env.ACT }}
-              run: uv run dvc pull
+              run: uv run dvc pull src/data/penguins.csv.dvc --verbose
 
             - name: Pull DVC data (local act)
               if: ${{ env.ACT }}
@@ -59,7 +59,10 @@ jobs:
                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 AWS_DEFAULT_REGION: us-east-1
-              run: env -u AWS_PROFILE uv run dvc pull
+              run: env -u AWS_PROFILE uv run dvc pull src/data/penguins.csv.dvc --verbose
+
+            - name: Verify DVC data
+              run: test -s src/data/penguins.csv
 
             - name: runs python tests
               run: |
